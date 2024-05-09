@@ -69,7 +69,6 @@ def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_page
         while url in visited and not queue.empty():
             _, url, title = queue.get()
         
-        #print(url)
 
         try:
             req = request.urlopen(url)
@@ -87,8 +86,8 @@ def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_page
 
             ntitle,author,content = extract_information(url, html, limit_words)
             extracted.append(url)
-            extracted.append(title + ';' + ntitle + ';' + author)
-            extracted.append(content)
+            extracted.append(title.replace('\n', ' ') + ';' + ntitle.replace('\n', ' ') + ';' + author.replace('\n', ' '))
+            extracted.append(content.replace('\n', ' '))
             extractlog.debug(content)
 
             for link, title in get_nonlocal_links(url):
@@ -116,17 +115,45 @@ def extract_information(url, html, limit_words):
     soup = BeautifulSoup(html, 'html.parser')
 
     if('jhunewsletter' in url):
-        title = soup.title.string
-        author_name = soup.find('p', class_ = 'authors').text.strip()
-        article_content = soup.find("div", class_="article-content").text.strip()
+        
+        if soup.title is not None:
+            title = soup.title.string
+        else:
+            title = ''
+        if soup.find('p', class_ = 'authors') is not None:
+            author_name = soup.find('p', class_ = 'authors').text.strip()
+        else:
+            author_name = ""
+        if soup.find("div", class_="article-content") is not None:
+            article_content = soup.find("div", class_="article-content").text.strip()
+        else:
+            article_content = soup.get_text()
     elif('hub.jhu' in url):
-        title = soup.title.string
-        author_name = soup.find(class_ = 'author').text
-        article_content = print(soup.find("div", id="main").text.strip())
+        
+        if soup.title is not None:
+            title = soup.title.string
+        else:
+            title = ''
+        if soup.find(class_ = 'author') is not None:
+            author_name = soup.find(class_ = 'author').text
+        else:
+            author_name = ""
+        if soup.find("div", id="main") is not None:
+            article_content = soup.find("div", id="main").text.strip()
+        else:
+            article_content = soup.get_text()
+
     elif('jhu.edu' in url):
-        title = soup.title.string
+        if soup.title is not None:
+            title = soup.title.string
+        else:
+            title = ''
         author_name = ''
-        article_content = soup.find("main").text.strip()
+        if soup.find("main") is not None:
+            article_content = soup.find("main").text.strip()
+        else:
+             article_content = soup.get_text()
+        
     else:
         if soup.title is not None:
             title = soup.title.string
@@ -139,7 +166,7 @@ def extract_information(url, html, limit_words):
         article_content = soup.get_text()
 
 
-    if limit_words:
+    if limit_words and article_content is not None:
         words = article_content.split()
         text_content = ' '.join(words[:limit_words])
 

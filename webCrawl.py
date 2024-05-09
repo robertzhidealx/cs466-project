@@ -22,21 +22,6 @@ def parse_links(root, html):
             text = re.sub('\s+', ' ', text).strip()
             yield (parse.urljoin(root, link.get('href')), text)
 
-#not used since crawl uses priority queue now
-def parse_links_sorted(root, html):
-    # Sort links based on their depth in the website hierarchy (number of slashes), so root directories get visited first
-
-    soup = BeautifulSoup(html, 'html.parser')
-    links = []
-    for link in soup.find_all('a'):
-        href = link.get('href')
-        if href:
-            text = link.string or ''
-            text = re.sub('\s+', ' ', text).strip()
-            full_url = parse.urljoin(root, href)
-            links.append((full_url, text))    
-    return sorted(links, key=lambda x: x[0].count('/'))
-
 
 def get_links(url):
     res = request.urlopen(url)
@@ -97,14 +82,14 @@ def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_page
 
             visited.append(url)
             visitlog.debug(url)
-
+            #writelines('html.txt', [html])
             parsed_url = parse.urlparse(url) #keep for later comparison
 
-            ex = extract_information(html, limit_words)
+            ntitle,author,content = extract_information(url, html, limit_words)
             extracted.append(url)
-            extracted.append(title)
-            extracted.append(ex)
-            extractlog.debug(ex)
+            extracted.append(title + ';' + ntitle + ';' + author)
+            extracted.append(content)
+            extractlog.debug(content)
 
             for link, title in get_nonlocal_links(url):
                 #if self reference, skip
@@ -124,19 +109,41 @@ def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_page
     return visited, extracted
 
 
-def extract_information(html, limit_words):
+def extract_information(url, html, limit_words):
     '''Extract information from HTML, returning a single piece of text'''
 
     # Extract all text content from the HTML document
     soup = BeautifulSoup(html, 'html.parser')
-    text_content = soup.get_text()
 
-    # Limit the text to the first 200 words if specified
+    if('jhunewsletter' in url):
+        title = soup.title.string
+        author_name = soup.find('p', class_ = 'authors').text.strip()
+        article_content = soup.find("div", class_="article-content").text.strip()
+    elif('hub.jhu' in url):
+        title = soup.title.string
+        author_name = soup.find(class_ = 'author').text
+        article_content = print(soup.find("div", id="main").text.strip())
+    elif('jhu.edu' in url):
+        title = soup.title.string
+        author_name = ''
+        article_content = soup.find("main").text.strip()
+    else:
+        if soup.title is not None:
+            title = soup.title.string
+        else:
+            title = ''
+        if soup.find(class_= 'author') is not None:
+            author_name = soup.find(class_ = 'author').text
+        else:
+            author_name = ''  
+        article_content = soup.get_text()
+
+
     if limit_words:
-        words = text_content.split()
+        words = article_content.split()
         text_content = ' '.join(words[:limit_words])
 
-    return text_content.strip()
+    return title, author_name, text_content.strip()
 
 
 

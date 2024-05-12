@@ -19,15 +19,17 @@ class Document(NamedTuple):
     doc_id: int
     url: str
     title: List[str]
+    author: List[str]
     body: List[str]
 
     def sections(self):
-        return [self.url, self.title, self.body]
+        return [self.url, self.title, self.author, self.body]
 
     def __repr__(self):
         return (f"doc_id: {self.doc_id}\n" +
             f"  url: {self.url}\n" +
             f"  title: {self.title}\n" +
+            f"  author: {self.author}\n" +
             f"  body: {self.body}")
 
 
@@ -53,16 +55,18 @@ def read_docs(file):
     with open(file) as f:
         url = ""
         title = []
+        author = []
         for line in f:
             line = line.strip()
-            if i % 3 == 0: url = line
+            if i % 4 == 0: url = line
             else:
                 tokens = []
                 for word in word_tokenize(line):
                     tokens.append(word)
-                if i % 3 == 1: title = tokens
-                elif i % 3 == 2:
-                    docs.append(Document(doc_id, url, title, tokens))
+                if i % 4 == 1: title = tokens
+                if i % 4 == 2: author = tokens
+                elif i % 4 == 3:
+                    docs.append(Document(doc_id, url, title, author, tokens))
                     doc_id += 1
             i += 1
 
@@ -79,14 +83,16 @@ def read_docs_intact(file):
     doc_id = 1
     with open(file) as f:
         url = ""
-        title = []
+        title = ""
+        author = ""
         for line in f:
             line = line.strip()
-            if i % 3 == 0: url = line
+            if i % 4 == 0: url = line
             else:
-                if i % 3 == 1: title = line
-                elif i % 3 == 2:
-                    docs.append(Document(doc_id, url, title, line))
+                if i % 4 == 1: title = line
+                if i % 4 == 2: author = line
+                elif i % 4 == 3:
+                    docs.append(Document(doc_id, url, title, author, line))
                     doc_id += 1
             i += 1
 
@@ -112,8 +118,8 @@ def remove_stopwords(docs: List[Document]):
 
 
 class TermWeights(NamedTuple):
-    # author: float
     title: float
+    author: float
     body: float
 
 
@@ -134,10 +140,10 @@ def compute_doc_freqs(docs: List[Document]):
 
 def compute_tf(doc: Document, doc_freqs: Dict[str, int], weights: list):
     vec = defaultdict(float)
-    # for word in doc.author:
-    #     vec[word] += weights.author
     for word in doc.title:
         vec[word] += weights.title
+    for word in doc.author:
+        vec[word] += weights.author
     for word in doc.body:
         vec[word] += weights.body
     return dict(vec)
@@ -156,11 +162,9 @@ def compute_tfidf(doc, doc_freqs, weights):
 
 def compute_boolean(doc, doc_freqs, weights):
     vec = defaultdict(float)
-    # for word in doc.author:
-    #     vec[word] = 1.0
-    # for word in doc.keyword:
-    #     vec[word] = 1.0
     for word in doc.title:
+        vec[word] = 1.0
+    for word in doc.author:
         vec[word] = 1.0
     for word in doc.body:
         vec[word] = 1.0
@@ -278,7 +282,7 @@ def get_doc(id):
     doc = read_docs_intact('extracted.txt')[id]
     return [{"id": doc.doc_id,
              "title": doc.title,
-            #  "author": doc.author,
+             "author": doc.author,
              "body": doc.body}]
 
 def search(docs, doc_vectors, query_vec, sim, count):
@@ -290,20 +294,25 @@ def search(docs, doc_vectors, query_vec, sim, count):
 
     return [{"id": doc.doc_id,
              "title": doc.title,
+             "author": doc.author,
              "body": doc.body}
             for doc in docs]
 
 
-def process_query(W="news-letter", A="", stem = True, removestop = True, weighting = "tfidf", similarity = "cosine", weights = "14", count = 5):
+def process_query(T = "", W="news-letter", A="", stem = True, removestop = True, weighting = "tfidf", similarity = "cosine", weights = "114", count = 5):
+    title = []
+    for word in word_tokenize(T):
+        title.append(word.lower())
+
     body = []
     for word in word_tokenize(W):
         body.append(word.lower())
 
-    # author = []
-    # for word in word_tokenize(A):
-    #     author.append(word.lower())
+    author = []
+    for word in word_tokenize(A):
+        author.append(word.lower())
 
-    query = Document(0, "", "", body)
+    query = Document(0, "", title, author, body)
 
     docs = read_docs('extracted.txt')
     docs_intact = read_docs_intact('extracted.txt')
@@ -326,7 +335,7 @@ def process_query(W="news-letter", A="", stem = True, removestop = True, weighti
         'overlap': overlap_sim
     }
 
-    term_weights = TermWeights(title=1, body=4) if weights == "14" else TermWeights(title=1, body=1) if weights == "11" else TermWeights(title=3, body=1)
+    term_weights = TermWeights(author=1, title=3, body=1) if weights == "131" else TermWeights(author=1, title=1, body=4) if weights == "114" else TermWeights(author=1, title=1, body=1)
 
     processed_docs, processed_queries = process_docs_and_queries(docs, [query], stem, removestop, stopwords)
     doc_freqs = compute_doc_freqs(processed_docs)
@@ -358,8 +367,6 @@ def process_queries(queries, stem, removestop, stopwords):
         processed_queries = stem_docs(processed_queries)
     return processed_queries
 
-
-# TODO: for use in evaluation later on
 
 # for term, stem, removestop, sim, term_weights in itertools.product(*permutations):
 #     processed_docs, processed_queries = process_docs_and_queries(docs, queries, stem, removestop, stopwords)
@@ -417,6 +424,9 @@ if __name__ == '__main__':
     print("Enter a query to search docs:")
     query = input()
 
+    print("Enter title:")
+    title = input()
+
     print("Enter author(s):")
     author = input()
 
@@ -432,8 +442,8 @@ if __name__ == '__main__':
     print("What similarity function to use? (cosine/jaccard/dice/overlap)")
     similarity = loop_input(input(), ['cosine', 'jaccard', 'dice', 'overlap'])
 
-    print("What weights to use? (14/11/31)")
-    weights = loop_input(input(), ['14', '11', '31'])
+    print("What weights to use? (131/114/111)")
+    weights = loop_input(input(), ['131', '114', '111'])
 
     print("How many docs do you want retrieved? Leave blank for unlimited")
     count = int(loop_count(input()))
@@ -441,7 +451,7 @@ if __name__ == '__main__':
     num = "unlimited" if count == -1 else "at most " + str(count)
     print(f"Searching for {num} docs using {query}, {author}, {stem}, {removestop}, {weighting}, {similarity}, {weights}...")
 
-    results = process_query(query, author, stem, removestop, weighting, similarity, weights, count)
+    results = process_query(title, query, author, stem, removestop, weighting, similarity, weights, count)
 
     # results = process_query()
 
@@ -450,5 +460,6 @@ if __name__ == '__main__':
     for doc in results:
         print("ID:", doc["id"])
         print("Title:", doc["title"])
+        print("Author:", doc["author"])
         print("Body:", doc["body"])
         print()

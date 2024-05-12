@@ -11,6 +11,7 @@ def home():
 
 @app.route("/search", methods=["GET"])
 def search():
+  title = request.args.get("title")
   query = request.args.get("query")
   author = request.args.get("author")
   stem = True if request.args.get("stem") == "true" else False
@@ -21,7 +22,7 @@ def search():
   count = request.args.get("count")
   count = -1 if count == "" else int(count)
 
-  docs = process_query(query, author, stem, removestop, weighting, similarity, weights, count)
+  docs = process_query(title, query, author, stem, removestop, weighting, similarity, weights, count)
 
   return jsonify(docs)
 

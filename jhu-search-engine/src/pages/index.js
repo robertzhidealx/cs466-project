@@ -9,13 +9,14 @@ export default function Home() {
   const params = useSearchParams();
   const router = useRouter();
 
+  const [title, setTitle] = useState("");
   const [query, setQuery] = useState("");
   const [author, setAuthor] = useState("");
   const [stem, setStem] = useState(true);
   const [removestop, setRemovestop] = useState(true);
   const [weighting, setWeighting] = useState("tfidf");
   const [similarity, setSimilarity] = useState("cosine");
-  const [weights, setWeights] = useState("1341");
+  const [weights, setWeights] = useState("114");
 
   const [numDocs, setNumDocs] = useState(5);
   const [docId, setDocId] = useState("");
@@ -23,6 +24,7 @@ export default function Home() {
   const [docs, setDocs] = useState([]);
 
   const handleSearch = (
+    title,
     query,
     author,
     stem,
@@ -32,9 +34,8 @@ export default function Home() {
     weights,
     numDocs
   ) => {
-    console.log(author);
     fetch(
-      `http://127.0.0.1:5000/search?query=${query}&author=${author}&stem=${stem}&remove=${removestop}&weighting=${weighting}&similarity=${similarity}&weights=${weights}&count=${numDocs}`
+      `http://127.0.0.1:5000/search?title=${title}&query=${query}&author=${author}&stem=${stem}&remove=${removestop}&weighting=${weighting}&similarity=${similarity}&weights=${weights}&count=${numDocs}`
     )
       .then((response) => response.json())
       .then(setDocs)
@@ -58,6 +59,7 @@ export default function Home() {
 
   useEffect(() => {
     if (params.size) {
+      const title = params.get("title") || "";
       const query = params.get("query") || "";
       const author = params.get("author") || "";
       const stem = params.get("stem") ? params.get("stem") === "true" : true;
@@ -69,6 +71,7 @@ export default function Home() {
       const weights = params.get("weights") || "1341";
       const numDocs = params.get("count") || "5";
 
+      if (title) setTitle(title);
       if (query) setQuery(query);
       if (author) setAuthor(author);
       if (stem) setStem(stem);
@@ -79,6 +82,7 @@ export default function Home() {
       if (numDocs) setNumDocs(numDocs);
 
       handleSearch(
+        title,
         query,
         author,
         stem,
@@ -108,33 +112,41 @@ export default function Home() {
     <main className={`flex justify-center min-h-screen ${inter.className}`}>
       <div className="bg-white w-[800px]">
         <h1
-          className="text-center text-lg py-4 border-b hover:cursor-pointer"
+          className="py-4 text-lg text-center border-b hover:cursor-pointer"
           onClick={() => router.push("/")}
         >
           Doc Search Engine
         </h1>
-        <h2 className="text-center border-b py-1 bg-gray-100">
+        <h2 className="py-1 text-center bg-gray-100 border-b">
           Tip: click the doc ID to copy search URL (jumps to doc position) to
           clipboard.
         </h2>
-        <div className="h-12 flex items-center justify-center mt-1">
+        <div className="flex items-center justify-center h-12 mt-1">
+          <input
+            type="text"
+            placeholder="Enter the title here"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="p-1 mr-2 text-center border rounded"
+          />
           <input
             type="text"
             placeholder="Enter your query here"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="border rounded p-1 text-center mr-2"
+            className="p-1 mr-2 text-center border rounded"
           />
           <input
             type="text"
             placeholder="Enter the author here"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
-            className="border rounded p-1 text-center mr-2"
+            className="p-1 mr-2 text-center border rounded"
           />
           <button
             onClick={() =>
               handleSearch(
+                title,
                 query,
                 author,
                 stem,
@@ -145,12 +157,12 @@ export default function Home() {
                 numDocs
               )
             }
-            className="border rounded py-1 px-2 text-center mr-2 bg-blue-500 text-white hover:bg-blue-700 hover:text-white transition"
+            className="px-2 py-1 mr-2 text-center text-white transition bg-blue-500 border rounded hover:bg-blue-700 hover:text-white"
           >
             Search
           </button>
         </div>
-        <div className="h-8 flex items-center justify-center border-dashed border-b pb-2">
+        <div className="flex items-center justify-center h-8 pb-2 border-b border-dashed">
           <input
             type="checkbox"
             name="stem"
@@ -171,7 +183,7 @@ export default function Home() {
             name="weighting"
             value={weighting}
             onChange={(e) => setWeighting(e.target.value)}
-            className="mr-2 border rounded text-sm text-center"
+            className="mr-2 text-sm text-center border rounded"
           >
             <option value="tf">Raw TF</option>
             <option value="tfidf">TF-IDF</option>
@@ -181,7 +193,7 @@ export default function Home() {
             name="similarity"
             value={similarity}
             onChange={(e) => setSimilarity(e.target.value)}
-            className="mr-2 border rounded text-sm text-center"
+            className="mr-2 text-sm text-center border rounded"
           >
             <option value="cosine">Cosine</option>
             <option value="jaccard">Jaccard</option>
@@ -192,31 +204,31 @@ export default function Home() {
             name="weights"
             value={weights}
             onChange={(e) => setWeights(e.target.value)}
-            className="border rounded text-sm text-center mr-2"
+            className="mr-2 text-sm text-center border rounded"
           >
-            <option value="1111">1,1,1,1</option>
-            <option value="1341">1,3,4,1</option>
-            <option value="1114">1,1,1,4</option>
+            <option value="131">1,3,1</option>
+            <option value="114">1,1,4</option>
+            <option value="111">1,1,1</option>
           </select>
           <input
             type="text"
             placeholder="Number of docs"
             value={numDocs}
             onChange={(e) => setNumDocs(e.target.value)}
-            className="border rounded text-sm text-center mr-2 w-36"
+            className="mr-2 text-sm text-center border rounded w-36"
           />
         </div>
-        <div className="py-2 flex justify-center border-b border-dashed">
+        <div className="flex justify-center py-2 border-b border-dashed">
           <input
             type="text"
             placeholder="Doc ID"
             value={docId}
             onChange={(e) => setDocId(e.target.value)}
-            className="text-center border rounded mr-2 p-1 w-16"
+            className="w-16 p-1 mr-2 text-center border rounded"
           />
           <button
             onClick={() => handleFindDoc(docId)}
-            className="border rounded py-1 px-2 text-center mr-2 bg-blue-500 text-white hover:bg-blue-700 hover:text-white transition"
+            className="px-2 py-1 mr-2 text-center text-white transition bg-blue-500 border rounded hover:bg-blue-700 hover:text-white"
           >
             Find Doc
           </button>
@@ -225,7 +237,7 @@ export default function Home() {
           {docs.map((doc) => (
             <div key={doc.id} id={doc.id} className="px-4 py-2">
               <div className="flex items-center">
-                <div className="mr-2 w-12 h-12 flex justify-center items-center rounded bg-blue-400 text-white">
+                <div className="flex items-center justify-center w-12 h-12 mr-2 text-white bg-blue-400 rounded">
                   <Link
                     href={`#${doc.id}`}
                     onClick={() => {
@@ -243,7 +255,7 @@ export default function Home() {
                   <div className="text-[14px]">{doc.author}</div>
                 </div>
               </div>
-              <p className="text-sm mt-2">{doc.abstract}</p>
+              <p className="mt-2 text-sm">{doc.abstract}</p>
             </div>
           ))}
         </div>

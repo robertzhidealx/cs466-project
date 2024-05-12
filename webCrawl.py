@@ -9,6 +9,7 @@ from urllib import parse, request
 logging.basicConfig(level=logging.DEBUG, filename='output.log', filemode='w')
 visitlog = logging.getLogger('visited')
 extractlog = logging.getLogger('extracted')
+output_file = 'extracted_jhu.txt'
 
 
 def parse_links(root, html):
@@ -44,7 +45,7 @@ def get_nonlocal_links(url):
     return filtered
 
 
-def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_pages=500):
+def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_pages=1500):
     '''Crawl the url specified by `root`.
     `wanted_content` is a list of content types to crawl
     `within_domain` specifies whether the crawler should limit itself to the domain of `root`
@@ -187,10 +188,9 @@ def writelines(filename, data):
             print(d, file=fout)
 
 
-def run(site, wanted_content=[], within_domain=True, limit_words=150, max_pages=500):
-  
-    if os.path.exists('extracted.txt'):
-        os.remove('extracted.txt')
+def run(site, wanted_content=[], within_domain=True, limit_words=150, max_pages=1500):
+    if os.path.exists(output_file):
+        os.remove(output_file)
  
     # links = get_links(site)
     # writelines('links.txt', links)
@@ -200,7 +200,7 @@ def run(site, wanted_content=[], within_domain=True, limit_words=150, max_pages=
 
     visited, extracted = crawl(site, wanted_content, within_domain, limit_words, max_pages)
     #writelines('visited.txt', visited)
-    writelines('extracted.txt', extracted)
+    writelines(output_file, extracted)
 
 def main():
     if len(sys.argv) < 2:

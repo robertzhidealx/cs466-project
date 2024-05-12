@@ -13,6 +13,7 @@ from math import log2
 
 
 num_docs = 0
+crawled_data_file = 'extracted.txt'
 
 
 class Document(NamedTuple):
@@ -279,7 +280,7 @@ def norm_precision(res, rel):
 
 
 def get_doc(id):
-    doc = read_docs_intact('extracted.txt')[id]
+    doc = read_docs_intact(crawled_data_file)[id]
     return [{"id": doc.doc_id,
              "title": doc.title,
              "author": doc.author,
@@ -293,6 +294,7 @@ def search(docs, doc_vectors, query_vec, sim, count):
     docs = [docs[x[0] - 1] for x in results_with_score]
 
     return [{"id": doc.doc_id,
+             "url": doc.url,
              "title": doc.title,
              "author": doc.author,
              "body": doc.body}
@@ -314,8 +316,8 @@ def process_query(T = "", W="news-letter", A="", stem = True, removestop = True,
 
     query = Document(0, "", title, author, body)
 
-    docs = read_docs('extracted.txt')
-    docs_intact = read_docs_intact('extracted.txt')
+    docs = read_docs(crawled_data_file)
+    docs_intact = read_docs_intact(crawled_data_file)
 
     global num_docs
     num_docs = len(docs)
@@ -466,4 +468,5 @@ if __name__ == '__main__':
         print("Title:", doc["title"])
         print("Author:", doc["author"])
         print("Body:", doc["body"])
+        print("URL:", doc["url"])
         print()

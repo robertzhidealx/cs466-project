@@ -250,8 +250,10 @@ export default function Home() {
                     {doc.id}
                   </Link>
                 </div>
-                <div className="">
-                  <div className="">{doc.title}</div>
+                <div>
+                  <a href={doc.url} className="text-blue-700 hover:underline">
+                    {doc.title}
+                  </a>
                   <div className="text-[14px]">{doc.author}</div>
                 </div>
               </div>

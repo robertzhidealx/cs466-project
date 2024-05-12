@@ -274,13 +274,18 @@ def norm_precision(res, rel):
     return 1 - top / bot
 
 
+def get_doc(id):
+    doc = read_docs_intact('extracted.txt')[id]
+    return [{"id": doc.doc_id,
+             "title": doc.title,
+            #  "author": doc.author,
+             "body": doc.body}]
+
 def search(docs, doc_vectors, query_vec, sim, count):
     results_with_score = [(doc_id + 1, sim(query_vec, doc_vec))
                     for doc_id, doc_vec in enumerate(doc_vectors)]
     count = len(results_with_score) if count == -1 else count
     results_with_score = (sorted(results_with_score, key=lambda x: -x[1]))[:count]
-    # print(results_with_score)
-    # print(docs)
     docs = [docs[x[0] - 1] for x in results_with_score]
 
     return [{"id": doc.doc_id,

@@ -49,7 +49,6 @@ def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_page
     `wanted_content` is a list of content types to crawl
     `within_domain` specifies whether the crawler should limit itself to the domain of `root`
     '''
-    # TODO: implement
 
     queue = PriorityQueue()  # Use PriorityQueue instead of Queue
 
@@ -85,6 +84,7 @@ def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_page
             parsed_url = parse.urlparse(url) #keep for later comparison
 
             ntitle,author,content = extract_information(url, html, limit_words)
+            print(author)
             extracted.append(url)
             extracted.append(title.replace('\n', ' ') + ';' + ntitle.replace('\n', ' ') + ';' + author.replace('\n', ' '))
             extracted.append(content.replace('\n', ' '))

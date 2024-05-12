@@ -44,7 +44,7 @@ def get_nonlocal_links(url):
     return filtered
 
 
-def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_pages=250):
+def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_pages=500):
     '''Crawl the url specified by `root`.
     `wanted_content` is a list of content types to crawl
     `within_domain` specifies whether the crawler should limit itself to the domain of `root`
@@ -70,6 +70,7 @@ def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_page
             _, url, title = queue.get()
         
         path = parse.urlparse(url).path
+        # skip certain less informative paths
         if path in ["/experts/", "/at-work/milestones/", "/at-work/cheers/"]:
             continue
 
@@ -184,7 +185,7 @@ def writelines(filename, data):
             print(d, file=fout)
 
 
-def run(site, wanted_content=[], within_domain=True, limit_words=150, max_pages=250):
+def run(site, wanted_content=[], within_domain=True, limit_words=150, max_pages=500):
   
     if os.path.exists('extracted.txt'):
         os.remove('extracted.txt')

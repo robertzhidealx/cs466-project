@@ -115,7 +115,7 @@ export default function Home() {
           className="py-4 text-lg text-center border-b hover:cursor-pointer"
           onClick={() => router.push("/")}
         >
-          Doc Search Engine
+          Hopkins Search Engine
         </h1>
         <h2 className="py-1 text-center bg-gray-100 border-b">
           Tip: click the doc ID to copy search URL (jumps to doc position) to
@@ -166,7 +166,7 @@ export default function Home() {
           <input
             type="checkbox"
             name="stem"
-            value={stem}
+            checked={stem}
             onChange={(e) => setStem(e.target.checked)}
             className="mr-1"
           />
@@ -174,7 +174,7 @@ export default function Home() {
           <input
             type="checkbox"
             name="remove"
-            value={removestop}
+            checked={removestop}
             onChange={(e) => setRemovestop(e.target.checked)}
             className="mr-1"
           />
@@ -237,7 +237,7 @@ export default function Home() {
           {docs.map((doc) => (
             <div key={doc.id} id={doc.id} className="px-4 py-2">
               <div className="flex items-center">
-                <div className="flex items-center justify-center w-12 h-12 mr-2 text-white bg-blue-400 rounded">
+                <div className="flex items-center justify-center flex-none w-12 h-12 mr-2 text-white bg-blue-400 rounded">
                   <Link
                     href={`#${doc.id}`}
                     onClick={() => {
@@ -255,7 +255,7 @@ export default function Home() {
                   <div className="text-[14px]">{doc.author}</div>
                 </div>
               </div>
-              <p className="mt-2 text-sm">{doc.abstract}</p>
+              <p className="mt-2 text-sm">{doc.body + "..."}</p>
             </div>
           ))}
         </div>

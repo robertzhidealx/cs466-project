@@ -400,8 +400,11 @@ def process_queries(queries, stem, removestop, stopwords):
 #     print(term, stem, removestop, sim, ','.join(map(str, term_weights)), *averages, sep='\t')
 
 
-def loop_input(i, opts):
-    if not i in opts:
+def loop_input(i, opts, default = ""):
+    if i == "" and default != "":
+        print(default)
+        return default
+    elif not i in opts:
         print("Invalid input. Please enter a valid option.")
         loop_input(input(), opts)
     else:
@@ -419,7 +422,8 @@ def loop_count(i):
 
 
 if __name__ == '__main__':
-    print("Welcome to JHU Domain Search Engine!")
+    print("Welcome to Hopkins Search Engine!")
+    print("Enter to select default option of multi-choice input.")
 
     print("Enter a query to search docs:")
     query = input()
@@ -430,20 +434,20 @@ if __name__ == '__main__':
     print("Enter author(s):")
     author = input()
 
-    print("Enable stemming? (y/n)")
-    stem = loop_input(input(), ['y', 'n']) == 'y'
+    print("Enable stemming? (y/n) Default y")
+    stem = loop_input(input(), ['y', 'n'], 'y') == 'y'
 
-    print("Remove stopwords? (y/n)")
-    removestop = loop_input(input(), ['y', 'n']) == 'y'
+    print("Remove stopwords? (y/n) Default y")
+    removestop = loop_input(input(), ['y', 'n'], 'y') == 'y'
 
-    print("What term weighting function to use? (tf/tfidf/boolean)")
-    weighting = loop_input(input(), ['tf', 'tfidf', 'boolean'])
+    print("What term weighting function to use? (tf/tfidf/boolean) Default tfidf")
+    weighting = loop_input(input(), ['tf', 'tfidf', 'boolean'], 'tfidf')
 
-    print("What similarity function to use? (cosine/jaccard/dice/overlap)")
-    similarity = loop_input(input(), ['cosine', 'jaccard', 'dice', 'overlap'])
+    print("What similarity function to use? (cosine/jaccard/dice/overlap) Default cosine")
+    similarity = loop_input(input(), ['cosine', 'jaccard', 'dice', 'overlap'], 'cosine')
 
-    print("What weights to use? (131/114/111)")
-    weights = loop_input(input(), ['131', '114', '111'])
+    print("What weights to use? (131/114/111) Default 114")
+    weights = loop_input(input(), ['131', '114', '111'], '114')
 
     print("How many docs do you want retrieved? Leave blank for unlimited")
     count = int(loop_count(input()))

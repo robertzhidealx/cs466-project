@@ -50,5 +50,8 @@ npm run dev
 
 Navigate to `http://localhost:3000` in your browser. Voila!
 
+A [screenshot](./webapp.png) of the website is included with this
+submission for your reference.
+
 Let us know at any point if you have issues running the code. Thank you very
 much!

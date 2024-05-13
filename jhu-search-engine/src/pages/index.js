@@ -202,7 +202,7 @@ export default function Home() {
           />
         </div>
         <div className="flex items-center justify-center pb-2 border-b border-dashed">
-          <label className="mr-2">Crawl from:</label>
+          <label className="mr-1">Crawl from</label>
           <select
             name="domain"
             value={domain}
@@ -227,7 +227,7 @@ export default function Home() {
             onChange={(e) => setOnline(e.target.checked)}
             className="mr-1"
           />
-          <label className="mr-2">Crawl latest?</label>
+          <label className="mr-1">Crawl latest?</label>
           <label className="mr-1">Crawl</label>
           <select
             name="numPages"
@@ -276,7 +276,7 @@ export default function Home() {
               }
               className="px-2 py-1 mr-2 text-center text-white transition bg-blue-500 border rounded hover:bg-blue-700 "
             >
-              Crawl & Search
+              {(online ? "Crawl & " : "") + "Search"}
             </button>
           )}
         </div>

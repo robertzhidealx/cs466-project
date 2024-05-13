@@ -91,7 +91,7 @@ def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_page
             ntitle,author,content = extract_information(url, html, limit_words)
             extracted.append(url)
             title_filtered = title.replace('\n', ' ')
-            title_sep = title_filtered + '' if title_filtered == '' else ';'
+            title_sep = title_filtered + '' if title_filtered == '' else ' '
             extracted.append(title_sep + ntitle.replace('\n', ' '))
             extracted.append(author.replace('\n', ' '))
             extracted.append(content.replace('\n', ' '))

@@ -21,15 +21,12 @@ def search():
   weights = request.args.get("weights")
   count = request.args.get("count")
   count = -1 if count == "" else int(count)
+  domain = request.args.get("domain")
+  online = True if request.args.get("online") == "true" else False
+  numPages = 100
+  numPages = request.args.get("numPages")
+  numPages = -1 if numPages == "" else int(numPages)
 
-  docs = process_query(title, query, author, stem, removestop, weighting, similarity, weights, count)
-
-  return jsonify(docs)
-
-@app.route("/doc", methods=["GET"])
-def doc():
-  id = request.args.get("id")
-
-  docs = get_doc(int(id))
+  docs = process_query(title, query, author, stem, removestop, weighting, similarity, weights, count, domain, online, numPages)
 
   return jsonify(docs)

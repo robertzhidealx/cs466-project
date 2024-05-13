@@ -9,7 +9,6 @@ from urllib import parse, request
 logging.basicConfig(level=logging.DEBUG, filename='output.log', filemode='w')
 visitlog = logging.getLogger('visited')
 extractlog = logging.getLogger('extracted')
-output_file = 'extracted_jhu.txt'
 
 
 def parse_links(root, html):
@@ -189,6 +188,8 @@ def writelines(filename, data):
 
 
 def run(site, wanted_content=[], within_domain=True, limit_words=150, max_pages=1500):
+    output_file = site + ".online.txt"
+
     if os.path.exists(output_file):
         os.remove(output_file)
  
@@ -198,8 +199,8 @@ def run(site, wanted_content=[], within_domain=True, limit_words=150, max_pages=
     # nonlocal_links = get_nonlocal_links(site)
     # writelines('nonlocal.txt', nonlocal_links)
 
-    visited, extracted = crawl(site, wanted_content, within_domain, limit_words, max_pages)
-    #writelines('visited.txt', visited)
+    _, extracted = crawl("https://" + site, wanted_content, within_domain, limit_words, max_pages)
+    # writelines('visited.txt', visited)
     writelines(output_file, extracted)
 
 def main():

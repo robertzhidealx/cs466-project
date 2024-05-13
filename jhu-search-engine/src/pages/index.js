@@ -9,6 +9,8 @@ export default function Home() {
   const params = useSearchParams();
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
+
   const [title, setTitle] = useState("");
   const [query, setQuery] = useState("");
   const [author, setAuthor] = useState("");
@@ -17,9 +19,12 @@ export default function Home() {
   const [weighting, setWeighting] = useState("tfidf");
   const [similarity, setSimilarity] = useState("cosine");
   const [weights, setWeights] = useState("114");
+  const [domain, setDomain] = useState("hub.jhu.edu");
+  const [customDomain, setCustomDomain] = useState("");
+  const [online, setOnline] = useState(false);
+  const [numPages, setNumPages] = useState(100);
 
   const [numDocs, setNumDocs] = useState(5);
-  const [docId, setDocId] = useState("");
 
   const [docs, setDocs] = useState([]);
 
@@ -32,21 +37,27 @@ export default function Home() {
     weighting,
     similarity,
     weights,
-    numDocs
+    numDocs,
+    domain,
+    online,
+    numPages,
+    customDomain
   ) => {
+    setLoading(true);
     fetch(
-      `http://127.0.0.1:5000/search?title=${title}&query=${query}&author=${author}&stem=${stem}&remove=${removestop}&weighting=${weighting}&similarity=${similarity}&weights=${weights}&count=${numDocs}`
+      `http://127.0.0.1:5000/search?title=${title}&query=${query}&author=${author}&stem=${stem}&remove=${removestop}&weighting=${weighting}&similarity=${similarity}&weights=${weights}&count=${numDocs}&domain=${
+        domain === "custom" ? customDomain : domain
+      }&online=${online}&numPages=${numPages}`
     )
-      .then((response) => response.json())
+      .then((response) => {
+        setLoading(false);
+        return response.json();
+      })
       .then(setDocs)
-      .catch((error) => console.error(error));
-  };
-
-  const handleFindDoc = (docId) => {
-    fetch(`http://127.0.0.1:5000/doc?id=${docId}`)
-      .then((response) => response.json())
-      .then(setDocs)
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        setLoading(false);
+        console.error(error);
+      });
   };
 
   const scrolltoHash = (id) => {
@@ -70,6 +81,7 @@ export default function Home() {
       const similarity = params.get("similarity") || "cosine";
       const weights = params.get("weights") || "1341";
       const numDocs = params.get("count") || "5";
+      const domain = params.get("domain") || "hub.jhu.edu";
 
       if (title) setTitle(title);
       if (query) setQuery(query);
@@ -80,6 +92,7 @@ export default function Home() {
       if (similarity) setSimilarity(similarity);
       if (weights) setWeights(weights);
       if (numDocs) setNumDocs(numDocs);
+      if (domain) setDomain(domain);
 
       handleSearch(
         title,
@@ -90,17 +103,9 @@ export default function Home() {
         weighting,
         similarity,
         weights,
-        numDocs
+        numDocs,
+        domain
       );
-    }
-  }, [params]);
-
-  useEffect(() => {
-    if (params.size === 0 && window.location.hash !== "") {
-      const docId = window.location.hash.slice(1);
-      setDocId(docId);
-      handleFindDoc(docId);
-      scrolltoHash(docId);
     }
   }, [params]);
 
@@ -110,17 +115,13 @@ export default function Home() {
 
   return (
     <main className={`flex justify-center min-h-screen ${inter.className}`}>
-      <div className="bg-white w-[800px]">
+      <div className="bg-white w-[1000px]">
         <h1
           className="py-4 text-lg text-center border-b hover:cursor-pointer"
           onClick={() => router.push("/")}
         >
           Hopkins Search Engine
         </h1>
-        <h2 className="py-1 text-center bg-gray-100 border-b">
-          Tip: click the doc ID to copy search URL (jumps to doc position) to
-          clipboard.
-        </h2>
         <div className="flex items-center justify-center h-12 mt-1">
           <input
             type="text"
@@ -143,26 +144,8 @@ export default function Home() {
             onChange={(e) => setAuthor(e.target.value)}
             className="p-1 mr-2 text-center border rounded"
           />
-          <button
-            onClick={() =>
-              handleSearch(
-                title,
-                query,
-                author,
-                stem,
-                removestop,
-                weighting,
-                similarity,
-                weights,
-                numDocs
-              )
-            }
-            className="px-2 py-1 mr-2 text-center text-white transition bg-blue-500 border rounded hover:bg-blue-700 hover:text-white"
-          >
-            Search
-          </button>
         </div>
-        <div className="flex items-center justify-center h-8 pb-2 border-b border-dashed">
+        <div className="flex items-center justify-center h-8 pb-2">
           <input
             type="checkbox"
             name="stem"
@@ -218,20 +201,84 @@ export default function Home() {
             className="mr-2 text-sm text-center border rounded w-36"
           />
         </div>
-        <div className="flex justify-center py-2 border-b border-dashed">
-          <input
-            type="text"
-            placeholder="Doc ID"
-            value={docId}
-            onChange={(e) => setDocId(e.target.value)}
-            className="w-16 p-1 mr-2 text-center border rounded"
-          />
-          <button
-            onClick={() => handleFindDoc(docId)}
-            className="px-2 py-1 mr-2 text-center text-white transition bg-blue-500 border rounded hover:bg-blue-700 hover:text-white"
+        <div className="flex items-center justify-center pb-2 border-b border-dashed">
+          <label className="mr-2">Crawl from:</label>
+          <select
+            name="domain"
+            value={domain}
+            onChange={(e) => setDomain(e.target.value)}
+            className="p-1.5 mr-2 text-sm text-center border rounded"
           >
-            Find Doc
-          </button>
+            <option value="hub.jhu.edu">JHU Hub</option>
+            <option value="jhunewsletter.com">JHU Newsletter</option>
+            <option value="custom">Custom</option>
+          </select>
+          {domain === "custom" ? (
+            <input
+              type="text"
+              onChange={(e) => setCustomDomain(e.target.value)}
+              className="w-24 p-1.5 mr-2 text-sm text-center border rounded"
+            />
+          ) : null}
+          <input
+            type="checkbox"
+            name="online"
+            checked={online}
+            onChange={(e) => setOnline(e.target.checked)}
+            className="mr-1"
+          />
+          <label className="mr-2">Crawl latest?</label>
+          <label className="mr-1">Crawl</label>
+          <select
+            name="numPages"
+            value={numPages}
+            onChange={(e) => setNumPages(e.target.value)}
+            className="p-1.5 mr-1 text-sm text-center border rounded"
+          >
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+            <option value={150}>150</option>
+            <option value={200}>200</option>
+            <option value={250}>250</option>
+            <option value={300}>300</option>
+            <option value={350}>350</option>
+            <option value={400}>400</option>
+            <option value={450}>450</option>
+            <option value={500}>500</option>
+          </select>
+          <label className="mr-2">pages</label>
+          {loading ? (
+            <button
+              disabled
+              className="px-2 py-1 mr-2 text-center text-white bg-blue-400 border rounded"
+            >
+              Loading...
+            </button>
+          ) : (
+            <button
+              onClick={() =>
+                handleSearch(
+                  title,
+                  query,
+                  author,
+                  stem,
+                  removestop,
+                  weighting,
+                  similarity,
+                  weights,
+                  numDocs,
+                  domain,
+                  online,
+                  numPages,
+                  customDomain
+                )
+              }
+              className="px-2 py-1 mr-2 text-center text-white transition bg-blue-500 border rounded hover:bg-blue-700 "
+            >
+              Crawl & Search
+            </button>
+          )}
         </div>
         <div className="mt-1">
           {docs.map((doc) => (

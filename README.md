@@ -15,7 +15,7 @@ the [official docs](https://flask.palletsprojects.com/en/3.0.x/installation).
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
-pip install flask flask-cors numpy nltk
+pip install flask flask-cors numpy nltk bs4
 ```
 
 In the venv, run the following command to start the Flask server:

@@ -8,6 +8,7 @@ from numpy.linalg import norm
 from nltk.stem.snowball import SnowballStemmer
 from nltk.tokenize import word_tokenize
 from math import log2
+from webCrawl import run
 # import nltk
 # nltk.download('punkt')
 
@@ -301,7 +302,7 @@ def search(docs, doc_vectors, query_vec, sim, count):
             for doc in docs]
 
 
-def process_query(T = "", W="news-letter", A="", stem = True, removestop = True, weighting = "tfidf", similarity = "cosine", weights = "114", count = 5):
+def process_query(T = "", W="news-letter", A="", stem = True, removestop = True, weighting = "tfidf", similarity = "cosine", weights = "114", count = 5, domain = "hub.jhu.edu", online = False, numPages = 100):
     title = []
     for word in word_tokenize(T):
         title.append(word.lower())
@@ -316,8 +317,12 @@ def process_query(T = "", W="news-letter", A="", stem = True, removestop = True,
 
     query = Document(0, "", title, author, body)
 
-    docs = read_docs(crawled_data_file)
-    docs_intact = read_docs_intact(crawled_data_file)
+    if online:
+        run(domain, max_pages=numPages)
+
+    data_file_name = domain + (".online" if online else "") + ".txt"
+    docs = read_docs(data_file_name)
+    docs_intact = read_docs_intact(data_file_name)
 
     global num_docs
     num_docs = len(docs)

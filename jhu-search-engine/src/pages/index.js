@@ -202,7 +202,7 @@ export default function Home() {
           />
         </div>
         <div className="flex items-center justify-center pb-2 border-b border-dashed">
-          <label className="mr-1">Crawl from</label>
+          <label className="mr-1">Search from</label>
           <select
             name="domain"
             value={domain}

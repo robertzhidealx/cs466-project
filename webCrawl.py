@@ -44,7 +44,7 @@ def get_nonlocal_links(url):
     return filtered
 
 
-def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_pages=1500):
+def crawl(root, wanted_content=[], within_domain=True, limit_words=150, max_pages=1000):
     '''Crawl the url specified by `root`.
     `wanted_content` is a list of content types to crawl
     `within_domain` specifies whether the crawler should limit itself to the domain of `root`
@@ -187,8 +187,8 @@ def writelines(filename, data):
             print(d, file=fout)
 
 
-def run(site, wanted_content=[], within_domain=True, limit_words=150, max_pages=1500):
-    output_file = site + ".online.txt"
+def run(site, wanted_content=[], within_domain=True, limit_words=150, max_pages=1000):
+    output_file = site + ".latest.txt"
 
     if os.path.exists(output_file):
         os.remove(output_file)

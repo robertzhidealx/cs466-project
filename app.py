@@ -22,11 +22,11 @@ def search():
   count = request.args.get("count")
   count = -1 if count == "" else int(count)
   domain = request.args.get("domain")
-  online = True if request.args.get("online") == "true" else False
+  latest = True if request.args.get("latest") == "true" else False
   numPages = 100
   numPages = request.args.get("numPages")
   numPages = -1 if numPages == "" else int(numPages)
 
-  docs = process_query(title, query, author, stem, removestop, weighting, similarity, weights, count, domain, online, numPages)
+  docs = process_query(title, query, author, stem, removestop, weighting, similarity, weights, count, domain, latest, numPages)
 
   return jsonify(docs)

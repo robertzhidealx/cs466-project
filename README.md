@@ -36,7 +36,7 @@ extract information from websites within domain www.jhu.edu, hub.jhu.edu and
 www.jhunewsletter.com more effectively, while also flexible enough to crawl from
 other websites.
 
-To run the crawler by itself, use 'python3 webCrawl.py {url}' (url should be
+To run the crawler by itself, use 'python webCrawl.py {url}' (url should be
 without the https:// prefix) to crawl websites with default settings. This would
 generate {url}.latest.txt containing 1000 crawled pages, with 4 lines per page.  The
 first line contains the url, the second line contains the title, the third line

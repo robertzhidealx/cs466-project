@@ -2,7 +2,7 @@
 
 ## Team members
 
-Jiaxuan Zhang (601.666, jzhan239@jhu.edu), Yiyang Li (TODO)
+Jiaxuan Zhang (601.666, jzhan239@jhu.edu), Yiyang Li (601.666, yli302@jhu.edu)
 
 Project summary:
 
@@ -17,12 +17,6 @@ GitHub repository: https://github.com/robertzhidealx/cs466-project
 
 ## Set up
 
-### Crawler
-
-### Search Engine
-
-Run the CLI app via `python3 query.py`.
-
 To run the Web app, first start the backend server:
 
 Create and enter into a Python virtual environment, and then install
@@ -34,6 +28,21 @@ python3 -m venv .venv
 . .venv/bin/activate
 pip install flask flask-cors numpy nltk bs4
 ```
+
+
+### Crawler
+
+Run the crawler to prepare the pre-crawled data. The crawler is engineered to 
+extract information from websites within domain www.jhu.edu, hub.jhu.edu and 
+www.jhunewsletter.com more effectively, while also flexible enough to crawl from
+other websites.
+
+To run the crawler by itself, use 'python3 webCrawl.py {url}' to crawl websites with default
+settings. Crawling could also be done from the CLI app.
+
+### Search Engine
+
+Run the CLI app via `python3 query.py`.
 
 In the venv, run the following command to start the Flask server:
 
@@ -73,6 +82,10 @@ much!
 ## Achievements
 
 ## Limitations
+
+Crawling and information extraction from other websites might not be as effective, due to
+variations in website designs. To achieve higher precision, please try increase the max word
+limit and the number of pages to crawl for non-JHU websites.
 
 ## Screenshots
 

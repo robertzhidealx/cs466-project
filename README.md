@@ -96,7 +96,11 @@ much!
 - Our web interface is modern and well-designed, providing users with a range of
   options to facilitate deriving the most relevant pages. Pages retrieved are
   ranked from the most relevant to the least relevant, whether it's the web app
-  or the CLI app.
+  or the CLI app. The search button on the web app gets disabled when crawling
+  is in progress, thus preventing the user from starting another crawl when the
+  current one has not finished. This follows best practices in design. The
+  retrieved entries additionally show their index in all the pages crawled and
+  their corresponding URL for easy reference of the actual page.
 
 - We give the users maximum flexibility by not only providing the JHU Hub and
   the JHU Newsletter as options to crawl and search from, but also arbitrary
@@ -133,9 +137,23 @@ much!
 
 ## Limitations
 
-Crawling and information extraction from other websites might not be as effective, due to
-variations in website designs. To achieve higher precision, please try increase the max word
-limit and the number of pages to crawl for non-JHU websites.
+- Crawling and information extraction from other websites might not be as
+  effective, due to variations in website designs. That said, we tried our best
+  to come up with a general purpose HTML search scheme to find fields like the
+  author of an article. To achieve higher precision, one may try to increase the
+  max word limit and the number of pages to crawl for non-JHU websites.
+
+- Our web app UI can be improved by the addition of a paging system, instead of
+  having the user scroll all the way down for certain entries.
+
+- A perma-link from within our web app can be provided for each retrieved entry,
+  for easier sharing with others. This feature will require very careful
+  engineering thanks to the dynamic nature of our search engine. We didn't
+  explore this due to time constraints.
+
+- It takes a while to crawl pages, thus it would be a nice extension to
+  parallelize this process to give users real-time feedback while crawling is in
+  progress.
 
 ## Screenshots
 

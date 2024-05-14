@@ -21,7 +21,7 @@ export default function Home() {
   const [weights, setWeights] = useState("114");
   const [domain, setDomain] = useState("hub.jhu.edu");
   const [customDomain, setCustomDomain] = useState("");
-  const [online, setOnline] = useState(false);
+  const [latest, setLatest] = useState(false);
   const [numPages, setNumPages] = useState(100);
 
   const [numDocs, setNumDocs] = useState(5);
@@ -39,7 +39,7 @@ export default function Home() {
     weights,
     numDocs,
     domain,
-    online,
+    latest,
     numPages,
     customDomain
   ) => {
@@ -47,7 +47,7 @@ export default function Home() {
     fetch(
       `http://127.0.0.1:5000/search?title=${title}&query=${query}&author=${author}&stem=${stem}&remove=${removestop}&weighting=${weighting}&similarity=${similarity}&weights=${weights}&count=${numDocs}&domain=${
         domain === "custom" ? customDomain : domain
-      }&online=${online}&numPages=${numPages}`
+      }&latest=${latest}&numPages=${numPages}`
     )
       .then((response) => {
         setLoading(false);
@@ -222,9 +222,9 @@ export default function Home() {
           ) : null}
           <input
             type="checkbox"
-            name="online"
-            checked={online}
-            onChange={(e) => setOnline(e.target.checked)}
+            name="latest"
+            checked={latest}
+            onChange={(e) => setLatest(e.target.checked)}
             className="mr-1"
           />
           <label className="mr-1">Crawl latest?</label>
@@ -269,14 +269,14 @@ export default function Home() {
                   weights,
                   numDocs,
                   domain,
-                  online,
+                  latest,
                   numPages,
                   customDomain
                 )
               }
               className="px-2 py-1 mr-2 text-center text-white transition bg-blue-500 border rounded hover:bg-blue-700 "
             >
-              {(online ? "Crawl & " : "") + "Search"}
+              {(latest ? "Crawl & " : "") + "Search"}
             </button>
           )}
         </div>

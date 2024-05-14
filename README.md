@@ -17,8 +17,6 @@ GitHub repository: https://github.com/robertzhidealx/cs466-project
 
 ## Set up
 
-To run the Web app, first start the backend server:
-
 Create and enter into a Python virtual environment, and then install
 dependencies. For more information and for the Windows commands, please refer to
 the [official docs](https://flask.palletsprojects.com/en/3.0.x/installation).
@@ -29,6 +27,7 @@ python3 -m venv .venv
 pip install flask flask-cors numpy nltk bs4
 ```
 
+`deactivate` to exit the virtual environment.
 
 ### Crawler
 
@@ -37,22 +36,27 @@ extract information from websites within domain www.jhu.edu, hub.jhu.edu and
 www.jhunewsletter.com more effectively, while also flexible enough to crawl from
 other websites.
 
-To run the crawler by itself, use 'python3 webCrawl.py {url}' to crawl websites with default
-settings. Crawling could also be done from the CLI app.
+To run the crawler by itself, use 'python3 webCrawl.py {url}' (url should be
+without the https:// prefix) to crawl websites with default settings. This would
+generate {url}.txt containing 1000 crawled pages, with 4 lines per page.  The
+first line contains the url, the second line contains the title, the third line
+contains the author, and the fourth line contains the preview text.
+
+Crawling could also be done from the web app, generating {url}.latest.txt files,
+again with the format specified previously.
 
 ### Search Engine
 
 Run the CLI app via `python3 query.py`.
 
-In the venv, run the following command to start the Flask server:
+To run the Web app, first enter the venv and start the backend server:
 
 ```bash 
+. .venv/bin/activate
 flask run
 ```
 
 The server is now running and will be used to serve data to the frontend.
-
-Ctrl-C to exit the server and `deactivate` to exit the virtual environment.
 
 To start the frontend website, open a new terminal and navigate to the
 `jhu-search-engine` directory.
@@ -76,7 +80,7 @@ npm run dev
 
 Navigate to `http://localhost:3000` in your browser. Voila!
 
-Let us know at any point if you have issues running the code. Thank you very
+Let us know at any point if you have issues running our project. Thank you very
 much!
 
 ## Achievements

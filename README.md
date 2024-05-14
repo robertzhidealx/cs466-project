@@ -38,7 +38,7 @@ other websites.
 
 To run the crawler by itself, use 'python3 webCrawl.py {url}' (url should be
 without the https:// prefix) to crawl websites with default settings. This would
-generate {url}.txt containing 1000 crawled pages, with 4 lines per page.  The
+generate {url}.latest.txt containing 1000 crawled pages, with 4 lines per page.  The
 first line contains the url, the second line contains the title, the third line
 contains the author, and the fourth line contains the preview text.
 
@@ -84,6 +84,14 @@ Let us know at any point if you have issues running our project. Thank you very
 much!
 
 ## Achievements
+- Crawling is optimized to ensure no duplicate access, and in-domain search is ensured
+  so we get info only from our desired websites.
+
+- Information extraction is engineered to accurately access desired information
+  from JHU websites, increasing efficiency and accuracy for JHU related searches.
+
+- Queue and stack strategies for crawling is implemented, so user could use different
+  crawling strategies corresponding to different websites.
 
 - Our web interface is modern and well-designed, providing users with a range of
   options to facilitate deriving the most relevant pages. Pages retrieved are

@@ -33,13 +33,13 @@ def get_nonlocal_links(url):
     but only keep non-local links and non self-references.
     Return a list of (link, title) pairs, just like get_links()'''
 
-    parsed_url = parse.urlparse(url)  # Parse the URL for comparison
+    parsed_url = parse.urlparse(url)  # parse the URL for comparison
     links = get_links(url)
     filtered = []
     for link, title in links:
-        parsed_link = parse.urlparse(link)  # Parse each extracted link
+        parsed_link = parse.urlparse(link)  # parse each extracted link
         if parsed_link.netloc != parsed_url.netloc or parsed_link.path != parsed_url.path:
-            # Keep links with different domains or paths
+            # keep links with different domains or paths
             filtered.append((link, title))
     return filtered
 
@@ -51,7 +51,7 @@ def queueCrawl(root, wanted_content=[], within_domain=True, limit_words=150, max
     Here we are using queue to implement FIFO strategy for crawling.
     '''
 
-    queue = Queue()  # Use queue
+    queue = Queue()  # use queue
 
     queue.put((root,''))
 
@@ -60,12 +60,11 @@ def queueCrawl(root, wanted_content=[], within_domain=True, limit_words=150, max
     cnt = 0
     while not queue.empty() and cnt < max_pages:
         cnt += 1
-        #print(cnt)
-        _, url, title = queue.get()  
+        url, title = queue.get()  
 
-        #skip if already visited
+        # skip if already visited
         while url in visited and not queue.empty():
-            _, url, title = queue.get()
+            url, title = queue.get()
         
         path = parse.urlparse(url).path
 
@@ -78,7 +77,7 @@ def queueCrawl(root, wanted_content=[], within_domain=True, limit_words=150, max
             html = req.read().decode('utf-8')
             content_type = req.headers['Content-Type']
 
-            #if content type is specified and not wanted, skip
+            # if content type is specified and not wanted, skip
             if len(wanted_content) > 0 and content_type not in wanted_content:
                 continue
 
@@ -89,7 +88,7 @@ def queueCrawl(root, wanted_content=[], within_domain=True, limit_words=150, max
             ntitle,author,content = extract_information(url, html, limit_words)
             extracted.append(url)
 
-            #additional filtering to avoid multiple lines
+            # additional filtering to avoid multiple lines
             title_filtered = title.replace('\n', ' ')
             title_sep = title_filtered + '' if title_filtered == '' else ' '
             extracted.append(title_sep + ntitle.replace('\n', ' '))
@@ -98,11 +97,11 @@ def queueCrawl(root, wanted_content=[], within_domain=True, limit_words=150, max
             extractlog.debug(content)
 
             for link, title in get_nonlocal_links(url):
-                #if self reference, skip
+                # if self reference, skip
                 if within_domain and parsed_url.netloc != parse.urlparse(link).netloc:
                     continue
 
-                #skip those if visited or void links
+                # skip those if visited or void links
                 if link in visited or link.startswith("javascript:"):
                     continue
 
@@ -120,7 +119,7 @@ def stackCrawl(root, wanted_content=[], within_domain=True, limit_words=150, max
     Here we are using stack to implement LIFO strategy for crawling.
     '''
 
-    stack = []  # Use stack
+    stack = []  # use stack
 
     stack.append((root,''))
 
@@ -129,12 +128,11 @@ def stackCrawl(root, wanted_content=[], within_domain=True, limit_words=150, max
     cnt = 0
     while stack and cnt < max_pages:
         cnt += 1
-        #print(cnt)
-        _, url, title = stack.pop()  
+        url, title = stack.pop()  
 
-        #skip if already visited
+        # skip if already visited
         while url in visited and stack:
-            _, url, title = stack.pop()
+            url, title = stack.pop()
         
         path = parse.urlparse(url).path
 
@@ -147,18 +145,18 @@ def stackCrawl(root, wanted_content=[], within_domain=True, limit_words=150, max
             html = req.read().decode('utf-8')
             content_type = req.headers['Content-Type']
 
-            #if content type is specified and not wanted, skip
+            # if content type is specified and not wanted, skip
             if len(wanted_content) > 0 and content_type not in wanted_content:
                 continue
 
             visited.append(url)
             visitlog.debug(url)
-            parsed_url = parse.urlparse(url) #keep for later comparison
+            parsed_url = parse.urlparse(url) # keep for later comparison
 
             ntitle,author,content = extract_information(url, html, limit_words)
             extracted.append(url)
 
-            #additional filtering to avoid multiple lines
+            # additional filtering to avoid multiple lines
             title_filtered = title.replace('\n', ' ')
             title_sep = title_filtered + '' if title_filtered == '' else ' '
             extracted.append(title_sep + ntitle.replace('\n', ' '))
@@ -167,15 +165,15 @@ def stackCrawl(root, wanted_content=[], within_domain=True, limit_words=150, max
             extractlog.debug(content)
 
             for link, title in get_nonlocal_links(url):
-                #if self reference, skip
+                # if self reference, skip
                 if within_domain and parsed_url.netloc != parse.urlparse(link).netloc:
                     continue
 
-                #skip those if visited or void links
+                # skip those if visited or void links
                 if link in visited or link.startswith("javascript:"):
                     continue
 
-                stack.append((link, title))  # Add link to the queue
+                stack.append((link, title))  # add link to the queue
 
         except Exception as e:
             print(e, url)
@@ -190,10 +188,10 @@ def extract_information(url, html, limit_words):
        limit_words is the maximum number of words to return for each content.
     '''
 
-    # Extract all text content from the HTML document
+    # extract all text content from the HTML document
     soup = BeautifulSoup(html, 'html.parser')
 
-    # Adjustments to newsletter crawling
+    # adjustments to newsletter crawling
     if('jhunewsletter' in url):
         
         if soup.title is not None:
@@ -208,7 +206,7 @@ def extract_information(url, html, limit_words):
             article_content = soup.find("div", class_="article-content").text.strip()
         else:
             article_content = soup.get_text().strip()
-    # Adjustments to hub.jhu.edu crawling
+    # adjustments to hub.jhu.edu crawling
     elif('hub.jhu' in url):
         
         if soup.title is not None:
@@ -223,7 +221,7 @@ def extract_information(url, html, limit_words):
             article_content = soup.find("div", id="main").text.strip()
         else:
             article_content = soup.get_text().strip()
-    # Adjustments to jhu.edu crawling
+    # adjustments to jhu.edu crawling
     elif('jhu.edu' in url):
         if soup.title is not None:
             title = soup.title.string.strip()
@@ -234,7 +232,7 @@ def extract_information(url, html, limit_words):
             article_content = soup.find("main").text.strip()
         else:
              article_content = soup.get_text().strip()
-    # General case. Agressive strategies are used, but if fails, it will return back to general crawling.
+    # general case; agressive strategies are used, but if fails, it will return back to general crawling.
     else:
         if soup.title is not None:
             title = soup.title.string.strip()
@@ -249,7 +247,7 @@ def extract_information(url, html, limit_words):
         else:
              article_content = soup.get_text().strip()
 
-    # Word limit to ensure that the content is not too long
+    # word limit to ensure that the content is not too long
     if limit_words and article_content is not None:
         words = article_content.split()
         text_content = ' '.join(words[:limit_words])

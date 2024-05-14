@@ -36,7 +36,7 @@ extract information from websites within domain www.jhu.edu, hub.jhu.edu and
 www.jhunewsletter.com more effectively, while also flexible enough to crawl from
 other websites.
 
-To run the crawler by itself, use 'python webCrawl.py {url}' (url should be
+To run the crawler by itself, use `python webCrawl.py {url}` (url should be
 without the https:// prefix) to crawl websites with default settings. This would
 generate {url}.latest.txt containing 1000 crawled pages, with 4 lines per page.  The
 first line contains the url, the second line contains the title, the third line
@@ -84,14 +84,20 @@ Let us know at any point if you have issues running our project. Thank you very
 much!
 
 ## Achievements
+
 - Crawling is optimized to ensure no duplicate access, and in-domain search is ensured
   so we get info only from our desired websites.
 
 - Information extraction is engineered to accurately access desired information
   from JHU websites, increasing efficiency and accuracy for JHU related searches.
 
-- Queue and stack strategies for crawling is implemented, so user could use different
-  crawling strategies corresponding to different websites.
+- Queue and stack strategies for crawling are implemented, so user could use different
+  crawling strategies corresponding to different websites. For both
+  implementations, we skip certain subtrees of pages due to their not offering
+  much useful articles to users. And for a similar reason, we do not weight
+  pages based on i.e. the number of slashes in their URL since this can lead to
+  either mostly higher-level pages (non-articles) getting retrieved first (thus
+  slow to get to articles) or pages that are too specific (also non-articles).
 
 - Our web interface is modern and well-designed, providing users with a range of
   options to facilitate deriving the most relevant pages. Pages retrieved are

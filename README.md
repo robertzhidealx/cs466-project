@@ -85,6 +85,44 @@ much!
 
 ## Achievements
 
+- Our web interface is modern and well-designed, providing users with a range of
+  options to facilitate deriving the most relevant pages. Pages retrieved are
+  ranked from the most relevant to the least relevant, whether it's the web app
+  or the CLI app.
+
+- We give the users maximum flexibility by not only providing the JHU Hub and
+  the JHU Newsletter as options to crawl and search from, but also arbitrary
+  domains as specified by users. Again, they may do this on our intuitively
+  designed web interface via a dropdown menu.
+
+- We provide multiple modailities of interaction with our tool, both through a
+  web graphical user interface and through a CLI tool. For users more accustomed
+  to GUIs, the web app is the way to go; for those who want a quick search, the
+  CLI tool can be a good option.
+
+- On the web app, users may choose if they want to search using the pre-crawled
+  dataset or crawl the latest data on the fly. The pros and cons of each option
+  are obvious: with the former, info retrieval is much faster but data may not
+  be the most up to date; with the latter, you get the most recent events but at
+  the cost of much slower runtime - crawling 100 pages take 30s to a minute, on
+  our end.
+
+- We designed our tool based on the client-server architecture, with clear-cut
+  APIs bridging the two. As a result, we are able to use a common set of
+  functions to serve the web frontend and the CLI frontend, including functions
+  related to info retrieval and those related to web crawling.
+
+- We allow search pages based on their title, author, and preview text (which is
+  part of the main body text), and additionally select whether to remove
+  stopwords, stem words, compute term weights using IDF, TF-IDF, or Boolean,
+  compute similarity using cosine, jaccard, dice, or overlap, which relative
+  weighting scheme to use across the three fields, and how many top pages to
+  retrieve.
+
+- On the web app, if a user wants to crawl on the fly, they may specify the
+  number of pages they want to the crawler to stop with, depending on how much
+  time they have on their hands.
+
 ## Limitations
 
 Crawling and information extraction from other websites might not be as effective, due to

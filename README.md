@@ -38,7 +38,12 @@ www.jhunewsletter.com more effectively, while also flexible enough to crawl from
 other websites.
 
 To run the crawler by itself, use 'python3 webCrawl.py {url}' to crawl websites with default
-settings. Crawling could also be done from the CLI app.
+settings. This would generate {url}.txt containing 1000 crawled pages, with 3 lines per page.
+The first line contains the url, the second line contains the author and title information, and the 
+third line contains the main body.
+
+Crawling could also be done from the CLI app, generating {url}.latest.txt, again with the format 
+specified previously.
 
 ### Search Engine
 

@@ -7,10 +7,12 @@ cors = CORS(app)
 
 @app.route("/")
 def home():
-  return "Welcome to Doc Search Engine!"
+  return "Welcome to Hopkins Search Engine!"
 
+# the main entrypoint to the API; handles all functionalities with page search
 @app.route("/search", methods=["GET"])
 def search():
+  # read all query parameters from incoming request URL
   title = request.args.get("title")
   query = request.args.get("query")
   author = request.args.get("author")
@@ -27,6 +29,8 @@ def search():
   numPages = request.args.get("numPages")
   numPages = -1 if numPages == "" else int(numPages)
 
+  # invoke the main information retrieval logic
   docs = process_query(title, query, author, stem, removestop, weighting, similarity, weights, count, domain, latest, numPages)
 
+  # return search results as a JSON object
   return jsonify(docs)

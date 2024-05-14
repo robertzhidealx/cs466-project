@@ -17,11 +17,13 @@ num_docs = 0
 crawled_data_file = 'extracted.txt'
 
 
+# the document representing each crawled page
 class Document(NamedTuple):
     doc_id: int
     url: str
     title: List[str]
     author: List[str]
+    # the body text
     body: List[str]
 
     def sections(self):
@@ -41,14 +43,12 @@ def read_stopwords(file):
 
 
 stopwords = read_stopwords('common_words')
-
-
 stemmer = SnowballStemmer('english')
 
 
 def read_docs(file):
     '''
-    Reads the corpus into a list of Documents
+    Reads the crawled data into a list of Documents
     '''
     docs = []
 
@@ -77,7 +77,8 @@ def read_docs(file):
 
 def read_docs_intact(file):
     '''
-    Reads the corpus into a list of untokenized Documents
+    Reads the crawled data into a list of _untokenized_ Documents
+    to facilitate displaying back to the user
     '''
     docs = []
 
@@ -119,6 +120,7 @@ def remove_stopwords(docs: List[Document]):
     return [remove_stopwords_doc(doc) for doc in docs]
 
 
+# relative weights of the three fields of a page
 class TermWeights(NamedTuple):
     title: float
     author: float
@@ -140,6 +142,7 @@ def compute_doc_freqs(docs: List[Document]):
     return freq
 
 
+# TF weighting
 def compute_tf(doc: Document, doc_freqs: Dict[str, int], weights: list):
     vec = defaultdict(float)
     for word in doc.title:
@@ -151,6 +154,7 @@ def compute_tf(doc: Document, doc_freqs: Dict[str, int], weights: list):
     return dict(vec)
 
 
+# TF weighting - based on TF
 def compute_tfidf(doc, doc_freqs, weights):
     tf = compute_tf(doc, doc_freqs, weights)
     for word in tf:
@@ -162,6 +166,7 @@ def compute_tfidf(doc, doc_freqs, weights):
     return tf
 
 
+# Simple boolean weighting
 def compute_boolean(doc, doc_freqs, weights):
     vec = defaultdict(float)
     for word in doc.title:
@@ -191,6 +196,7 @@ def cosine_sim(x, y):
     return num / (norm(list(x.values())) * norm(list(y.values())))
 
 
+# dice similarity
 def dice_sim(x, y):
     num = dictdot(x, y)
     if num == 0:
@@ -198,6 +204,7 @@ def dice_sim(x, y):
     return (2 * num) / (sum(x.values()) + sum(y.values()))
 
 
+# jaccard similarity
 def jaccard_sim(x, y):
     num = dictdot(x, y)
     if num == 0:
@@ -205,6 +212,7 @@ def jaccard_sim(x, y):
     return num / (sum(x.values()) + sum(y.values()) - num + 0.000001)
 
 
+# overlap similarity
 def overlap_sim(x, y):
     num = dictdot(x, y)
     if num == 0:
@@ -220,7 +228,7 @@ def interpolate(x1, y1, x2, y2, x):
 
 def precision_at(rec: float, results: List[int], relevant: List[int]) -> float:
     '''
-    This function should compute the precision at the specified recall level.
+    This function computes the precision at the specified recall level.
     If the recall level is in between two points, you should do a linear interpolation
     between the two closest points. For example, if you have 4 results
     (recall 0.25, 0.5, 0.75, and 1.0), and you need to compute recall @ 0.6, then do something like
@@ -280,6 +288,7 @@ def norm_precision(res, rel):
     return 1 - top / bot
 
 
+# retrieve page based on its ID (index in a batch)
 def get_doc(id):
     doc = read_docs_intact(crawled_data_file)[id]
     return [{"id": doc.doc_id,
@@ -287,6 +296,7 @@ def get_doc(id):
              "author": doc.author,
              "body": doc.body}]
 
+# Search relevant web pages
 def search(docs, doc_vectors, query_vec, sim, count):
     results_with_score = [(doc_id + 1, sim(query_vec, doc_vec))
                     for doc_id, doc_vec in enumerate(doc_vectors)]
@@ -302,29 +312,38 @@ def search(docs, doc_vectors, query_vec, sim, count):
             for doc in docs]
 
 
+# process user query (along with many tunable options) and search for most relevant web pages
 def process_query(T = "", W="news-letter", A="", stem = True, removestop = True, weighting = "tfidf", similarity = "cosine", weights = "114", count = 5, domain = "hub.jhu.edu", latest = False, numPages = 100):
     title = []
+    # tokenize title
     for word in word_tokenize(T):
         title.append(word.lower())
 
     body = []
+    # tokenize body text
     for word in word_tokenize(W):
         body.append(word.lower())
 
     author = []
+    # tokenize author
     for word in word_tokenize(A):
         author.append(word.lower())
 
+    # create query document
     query = Document(0, "", title, author, body)
 
+    # if we require the latest data, then first crawl the URLs discovered under the starting `domain` on the fly
     if latest:
         run(domain, max_pages=numPages)
 
+    # the (newly) generated file of crawled pages
     data_file_name = domain + (".latest" if latest else "") + ".txt"
     docs = read_docs(data_file_name)
+    # keep a untokenized copy to display back to users
     docs_intact = read_docs_intact(data_file_name)
 
     global num_docs
+    # help with computing TF-IDF
     num_docs = len(docs)
 
     stopwords = read_stopwords('common_words')
@@ -342,18 +361,24 @@ def process_query(T = "", W="news-letter", A="", stem = True, removestop = True,
         'overlap': overlap_sim
     }
 
+    # different relative weights between doc fields, depending on which one the user wants to use
     term_weights = TermWeights(author=1, title=3, body=1) if weights == "131" else TermWeights(author=1, title=1, body=4) if weights == "114" else TermWeights(author=1, title=1, body=1)
 
+    # stemming tokens, remove stopwords for both the web pages and the user query
     processed_docs, processed_queries = process_docs_and_queries(docs, [query], stem, removestop, stopwords)
     doc_freqs = compute_doc_freqs(processed_docs)
-    doc_vectors = [term_funcs[weighting](doc, doc_freqs, term_weights) for doc in processed_docs]
 
+    # vectorize both web page docs and the query doc
+    doc_vectors = [term_funcs[weighting](doc, doc_freqs, term_weights) for doc in processed_docs]
     query_vec = term_funcs[weighting](processed_queries[0], doc_freqs, term_weights)
+    
+    # search for the most relevant web pages given query
     results = search(docs_intact, doc_vectors, query_vec, sim_funcs[similarity], count)
 
     return results
 
 
+# remove stopwords and/or stem tokens for both crawled web page docs and queries
 def process_docs_and_queries(docs, queries, stem, removestop, stopwords):
     processed_docs = docs
     processed_queries = queries
@@ -366,6 +391,7 @@ def process_docs_and_queries(docs, queries, stem, removestop, stopwords):
     return processed_docs, processed_queries
 
 
+# remove stopwords and/or stem tokens for just queries
 def process_queries(queries, stem, removestop, stopwords):
     processed_queries = queries
     if removestop:
@@ -407,6 +433,7 @@ def process_queries(queries, stem, removestop, stopwords):
 #     print(term, stem, removestop, sim, ','.join(map(str, term_weights)), *averages, sep='\t')
 
 
+# self-repeating loop to get well-formatted input from user
 def loop_input(i, opts, default = ""):
     if i == "" and default != "":
         print(default)
@@ -418,6 +445,7 @@ def loop_input(i, opts, default = ""):
         return i
 
 
+# self-repeating loop to get well-formatted input integer from user
 def loop_count(i):
     if i == '':
         return -1
@@ -428,6 +456,7 @@ def loop_count(i):
         return i
 
 
+# entrypoint to the CLI app of our Hopkins Search Engine
 if __name__ == '__main__':
     print("Welcome to Hopkins Search Engine!")
     print("Enter to select default option of multi-choice input.")

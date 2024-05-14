@@ -11,6 +11,7 @@ export default function Home() {
 
   const [loading, setLoading] = useState(false);
 
+  // React states related to searching pages
   const [title, setTitle] = useState("");
   const [query, setQuery] = useState("");
   const [author, setAuthor] = useState("");
@@ -23,11 +24,11 @@ export default function Home() {
   const [customDomain, setCustomDomain] = useState("");
   const [latest, setLatest] = useState(false);
   const [numPages, setNumPages] = useState(100);
-
   const [numDocs, setNumDocs] = useState(5);
 
   const [docs, setDocs] = useState([]);
 
+  // Main search function fetching data from the backend
   const handleSearch = (
     title,
     query,
@@ -68,6 +69,7 @@ export default function Home() {
     });
   };
 
+  // Auto-populate web page with search criteria specified in the URL
   useEffect(() => {
     if (params.size) {
       const title = params.get("title") || "";
@@ -113,6 +115,7 @@ export default function Home() {
     scrolltoHash(window.location.hash.slice(1));
   }, [docs]);
 
+  // HTML (JSX) of the web page
   return (
     <main className={`flex justify-center min-h-screen ${inter.className}`}>
       <div className="bg-white w-[1000px]">

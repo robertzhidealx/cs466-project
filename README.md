@@ -47,7 +47,8 @@ again with the format specified previously.
 
 ### Search Engine
 
-Run the CLI app via `python3 query.py`.
+Run the CLI app via `python3 query.py` or from within the venv, `python
+query.py`.
 
 To run the Web app, first enter the venv and start the backend server:
 
@@ -79,6 +80,9 @@ npm run dev
 ```
 
 Navigate to `http://localhost:3000` in your browser. Voila!
+
+[index.js](./jhu-search-engine/src/pages/index.js) is the main web page file for
+the web frontend.
 
 Let us know at any point if you have issues running our project. Thank you very
 much!
@@ -140,6 +144,13 @@ much!
 - On the web app, if a user wants to crawl on the fly, they may specify the
   number of pages they want to the crawler to stop with, depending on how much
   time they have on their hands.
+
+- In our CLI app, the user is guided through a series of questions to determine
+  their preferred configuration of the search. Most of these steps have a
+  default selected option (e.g., cosine, TF-IDF) and the user only needs to
+  press enter to select the default, instead of having to manually enter them
+  each and every time they try to search something. User experience is what we
+  care about!
 
 ## Limitations
 
@@ -223,6 +234,10 @@ Below is a list describing their effectiveness:
   body text. The results again make sense, where the first two results both have
   Romney in the body text, and the third result has "2024" in the title but no
   Romney in the body text.
+
+- [cli](./screenshots/cli.png) shows an interative session of our CLI app, where
+  the user searches for pages whose title mentions "2024" and body text mentions
+  "romney". The result is exactly as we would expect.
 
 ## Notes
 

@@ -1,8 +1,25 @@
-# JHU Domain Crawler + Search Engine
+# Hopkins Search Engine
 
-## Crawler
+## Team members
 
-## Search Engine
+Jiaxuan Zhang (601.666, jzhan239@jhu.edu), Yiyang Li (TODO)
+
+Project summary:
+
+Web and CLI apps to help Hopkins students gain easier access to the latest
+events, activities, and announcements on campus and within the Hopkins
+community. We allow users the options to (1) quickly query pre-crawled data we
+update periodically, or (2) crawl the latest info as they search. Both the web
+and CLI interface exposes many options (e.g., which high-level domain to search
+from) for the users to tweak that allows for fine-grained search control.
+
+GitHub repository: https://github.com/robertzhidealx/cs466-project
+
+## Set up
+
+### Crawler
+
+### Search Engine
 
 Run the CLI app via `python3 query.py`.
 
@@ -50,8 +67,27 @@ npm run dev
 
 Navigate to `http://localhost:3000` in your browser. Voila!
 
+Let us know at any point if you have issues running the code. Thank you very
+much!
+
+## Achievements
+
+## Limitations
+
+## Screenshots
+
 A [screenshot](./webapp.png) of the website is included with this
 submission for your reference.
 
-Let us know at any point if you have issues running the code. Thank you very
-much!
+TODO: add more
+
+## Empirical evaluation
+
+Since our tool is essentially a search engine, there is no obvious metric by
+which we can evaluate its effectiveness against real-time data.
+
+## Notes
+
+Besides the Python/JavaScript libraries we utilize, all code was written by the
+two of us (based to some extent on skeletons provided in prior assignments of
+this course). 

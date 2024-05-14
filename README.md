@@ -40,7 +40,7 @@ To run the crawler by itself, use `python webCrawl.py {url}` (url should be
 without the https:// prefix) to crawl websites with default settings. This would
 generate {url}.latest.txt containing 1000 crawled pages, with 4 lines per page.  The
 first line contains the url, the second line contains the title, the third line
-contains the author, and the fourth line contains the preview text.
+contains the author, and the fourth line contains the body text.
 
 Crawling could also be done from the web app, generating {url}.latest.txt files,
 again with the format specified previously.
@@ -130,7 +130,7 @@ much!
   functions to serve the web frontend and the CLI frontend, including functions
   related to info retrieval and those related to web crawling.
 
-- We allow search pages based on their title, author, and preview text (which is
+- We allow search pages based on their title, author, and body text (which is
   part of the main body text), and additionally select whether to remove
   stopwords, stem words, compute term weights using IDF, TF-IDF, or Boolean,
   compute similarity using cosine, jaccard, dice, or overlap, which relative
@@ -161,17 +161,68 @@ much!
   parallelize this process to give users real-time feedback while crawling is in
   progress.
 
-## Screenshots
-
-A [screenshot](./webapp.png) of the website is included with this
-submission for your reference.
-
-TODO: add more
-
-## Empirical evaluation
+## Screenshots & Empirical evaluation
 
 Since our tool is essentially a search engine, there is no obvious metric by
-which we can evaluate its effectiveness against real-time data.
+which we can evaluate its effectiveness against real-time data. Thus, we take a
+qualitative approach to empirically evaluate our work.
+
+In the [screenshots](./screenshots) directory, we have included a collection of
+screenshots corresponding to different scenarios and use cases of our tool.
+Below is a list describing their effectiveness:
+
+- [admit_student_kirkman](./screenshots/admit_student_kirkman.png) shows the top
+  results of a search based on the latest live-crawled data that seeks for
+  "admit" in the title, "student" in the body text, and "kirkman" as the
+  author. As you can see, the most relevant result in this case meets all three
+  criteria. Since we're using the 1,1,4 weighting scheme where 4 is assigned to
+  the body text, it is more important to have "student" in the body text
+  than to have "admit" in the title. This is reflected in the remaining results
+  shown, which *all* have "student" in the body text.
+
+- [admit_student_kirkman_latest](./screenshots/admit_student_kirkman_precrawled.png)
+  is a version of the previous search run on pre-crawled data. This leads to
+  slightly more historical articles compared with the previous use case.
+
+- [commence_romney](./screenshots/commence_romney.png) searches for pages
+  that has "commence" in the title and "romney" in the body text. As you can
+  see, the top result has both commencement in the title and Mitt Romney
+  mentioned in the body text. The second and third page have Romney in the body
+  text but not commencement in the title. The fourth and fifth page have
+  commencement in the title but no mention of Romney in the body text. This
+  ranking makes total sense and would most likely fit the user's information
+  need.
+
+- [romney_commence](./screenshots/romney_commence.png) flips the importance of
+  the two criteria in the previous search, where "commence" being in the body
+  text is more important. As a result, article 4 (with Romney in the title) went
+  from rank 1 to rank 3, which makes sense.
+
+- [commence_rosen_114](./screenshots/commence_rosen_114.png) searches pages that have "Commence"
+  in the body text and "rosen" as the author. 4/5 of the shown results mention
+  commencement in their body text. In particular, Jill Rosen is the author of
+  the third page. The reason why this page is not ranked higher is that we are
+  using the 1,1,4 weighting scheme where body text outweighs author by a huge
+  margin. We will observe a similar search next. The last page has Rosen as the
+  author but not on commencement (truncated in this image but shown in a related
+  article in the next one).
+
+- [commence_rosen_111](./screenshots/commence_rosen_111.png) searches pages that have "Commence"
+  in the body text and "rosen" as the author, but with a uniform weighting
+  scheme of 1,1,1. As a result, it makes sense that the article Rosen wrote on
+  commencement is ranked first instead of third now. Page 31, ranked last, also
+  has Rosen as the author but not on commencement. Again, we see rankings that
+  are exactly consistent with our expectations.
+
+- [loading](./screenshots/loading.png) shows the UI when the latest pages are
+  being crawled live as part of a search. Notice how the button is disabled
+  while "loading..." is shown instead of the usual "Crawl & Search".
+
+- [romney_2024_newsletter](./screenshots/romney_2024_newsletter.png) shows a
+  search from the JHU Newsletter for "romney" in the title and "2024" in the
+  body text. The results again make sense, where the first two results both have
+  Romney in the body text, and the third result has "2024" in the title but no
+  Romney in the body text.
 
 ## Notes
 

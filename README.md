@@ -11,7 +11,8 @@ events, activities, and announcements on campus and within the Hopkins
 community. We allow users the options to (1) quickly query pre-crawled data we
 update periodically, or (2) crawl the latest info as they search. Both the web
 and CLI interface exposes many options (e.g., which high-level domain to search
-from) for the users to tweak that allows for fine-grained search control.
+from, which similarity function to use, etc.) for the users to tweak that
+allows for fine-grained search control.
 
 GitHub repository: https://github.com/robertzhidealx/cs466-project
 
@@ -40,7 +41,9 @@ To run the crawler by itself, use `python webCrawl.py {url}` (url should be
 without the https:// prefix) to crawl websites with default settings. This would
 generate {url}.latest.txt containing 1000 crawled pages, with 4 lines per page.  The
 first line contains the url, the second line contains the title, the third line
-contains the author, and the fourth line contains the body text.
+contains the author, and the fourth line contains the body text. Our pre-crawled
+data resides in versions that don't have the ".latest" suffix, e.g.,
+`hub.jhu.edu.txt`.
 
 Crawling could also be done from the web app, generating {url}.latest.txt files,
 again with the format specified previously.
@@ -57,7 +60,8 @@ To run the Web app, first enter the venv and start the backend server:
 flask run
 ```
 
-The server is now running and will be used to serve data to the frontend.
+The server is now running and will be used to serve data to the frontend. The
+server file is [app.py](./app.py).
 
 To start the frontend website, open a new terminal and navigate to the
 `jhu-search-engine` directory.
@@ -81,8 +85,8 @@ npm run dev
 
 Navigate to `http://localhost:3000` in your browser. Voila!
 
-[index.js](./jhu-search-engine/src/pages/index.js) is the main web page file for
-the web frontend.
+[jhu-search-engine/src/pages/index.js](./jhu-search-engine/src/pages/index.js)
+is the main web page file for the web frontend.
 
 Let us know at any point if you have issues running our project. Thank you very
 much!

@@ -4,3 +4,4 @@ __pycache__
 node_modules
 *.log
 *.latest.txt
+*.zip
